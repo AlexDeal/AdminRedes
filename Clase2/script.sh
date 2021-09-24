@@ -1,23 +1,25 @@
 #!/bin/bash
 
-#Inicializamos las variables que vamos a utilizar
-# n=0
-# nombre=""
-# apellido1=""
-# apellido2=""
-# arreglonombres=()
-# arreglousuarios=()
+# Programa que pide un numero n, para crear usuarios basados en el nombre y apellidos
+# El nombre de usuario se crear a partir de las 3 primeras letras del nombre, las 3 del apellido paterno
+# y 2 letras del apellido materno.
+# Por ejemplo: Con el nombre Jesus Alejandro Serrano Morales tenemos el nombre de usuario: Jessermo
+# En el caso de que el usuario ya exista, se agrega un numero al final del usuario.
+# Por ejemplo en el caso de que el usuario anterior exista, entonces el nuevo usuario seria: Jessermo1
 
-#Funcion para leer los usuarios por nombre y apellidos.
+
+# Funcion para leer los usuarios por nombre y apellidos.
 agregar_usuarios () {
     clear
-    read -p "Ingrese el numero de usuarios que quiere registar: " n
     for ((i=0; i<$n;i++)); do
         echo "Usuario numero: " $((i+1))
         echo "---------------------------------------------------"
         read -p "Ingrese el nombre: " nombre
+        nombre="${nombre^}"
         read -p "Ingrese el apellido paterno: " apellido1
+        apellido1="${apellido1^}"
         read -p "Ingrese el apellido materno: " apellido2
+        apellido2="${apellido2^}"
         nombrecompleto="$nombre $apellido1 $apellido2"
         read -a nombre <<< "$nombre"
         usuario="${nombre[0]}${apellido1:0:3}${apellido2:0:2}"
@@ -30,6 +32,7 @@ agregar_usuarios () {
     done
 }
 
+# Con esta funcion verificamos que el usuario no exista y en dado de que exista se agregará un numero al nombre de usuario
 verificar_usuario () {
     j=0
     for us in ${arreglousuarios[*]}; do
@@ -43,7 +46,7 @@ verificar_usuario () {
     fi
 }
 
-#Funcion para mostrar todos los usuarios
+# Funcion para mostrar todos los usuarios
 mostrar_usuarios () {
     clear
     for ((i=0;i<$n;i++)); do
@@ -52,30 +55,25 @@ mostrar_usuarios () {
         echo "Nombre: ${arreglonombres[i]}"
         echo "Usuario: ${arreglousuarios[i]}"
         echo
+        # Descomentar la linea siguiente para agregar los usuarios
         #sudo useradd -m ${arreglousuarios[i],,}
     done
     read -p "Presiona una tecla para continuar" opcion1
 }
 
-while : ;do
-    clear
-    echo "  █████╗ ██████╗ ██████╗     ██╗   ██╗███████╗███████╗██████╗ ███████╗    "
-    echo " ██╔══██╗██╔══██╗██╔══██╗    ██║   ██║██╔════╝██╔════╝██╔══██╗██╔════╝    "
-    echo " ███████║██║  ██║██║  ██║    ██║   ██║███████╗█████╗  ██████╔╝███████╗    "
-    echo " ██╔══██║██║  ██║██║  ██║    ██║   ██║╚════██║██╔══╝  ██╔══██╗╚════██║    "
-    echo " ██║  ██║██████╔╝██████╔╝    ╚██████╔╝███████║███████╗██║  ██║███████║    "
-    echo " ╚═╝  ╚═╝╚═════╝ ╚═════╝      ╚═════╝ ╚══════╝╚══════╝╚═╝  ╚═╝╚══════╝    "
 
-    echo "1.- Agregar usuarios"                                                                         
-    echo "2.- Mostrar usuarios creados"
-    echo "3.- Salir"
+clear
+echo "  █████╗ ██████╗ ██████╗     ██╗   ██╗███████╗███████╗██████╗ ███████╗    "
+echo " ██╔══██╗██╔══██╗██╔══██╗    ██║   ██║██╔════╝██╔════╝██╔══██╗██╔════╝    "
+echo " ███████║██║  ██║██║  ██║    ██║   ██║███████╗█████╗  ██████╔╝███████╗    "
+echo " ██╔══██║██║  ██║██║  ██║    ██║   ██║╚════██║██╔══╝  ██╔══██╗╚════██║    "
+echo " ██║  ██║██████╔╝██████╔╝    ╚██████╔╝███████║███████╗██║  ██║███████║    "
+echo " ╚═╝  ╚═╝╚═════╝ ╚═════╝      ╚═════╝ ╚══════╝╚══════╝╚═╝  ╚═╝╚══════╝    "
 
-    read -p "Ingrese una opcion [1-3]: " opcion
-
-    case $opcion in
-        1) agregar_usuarios;;
-        2) mostrar_usuarios;;
-        3) echo "Adios"
-           exit 0;;
-    esac
+while [[ ! $n =~ ^[1-9] ]]; do
+    echo Ingrese el numero de usuarios a registar
+    read n
 done
+
+agregar_usuarios
+mostrar_usuarios
