@@ -2,13 +2,11 @@
 
 #Funciones
 crearContraseña(){
-    sudo -S apt install libpam-pwquality
-    sudo chmod 666 /etc/security/pwquality.conf
-    echo "minlen=12" >> /etc/security/pwquality.conf
-    sudo chmod 644 /etc/security/pwquality.conf
+    #sudo -S sed -i 's/sha512/sha512 minline=12/g' /etc/pam.d/common-password
     echo "Longitud modificada exitosamente"
-    read -p "Ingrese el nombre del usuario" nombre
-    sudo -S adduser $nombre
+    read -p "Ingrese el nombre del usuario al que le quiere cambiar la contraseña: " nombre
+    ead -p "Ingrese la nueva contraseña: " pass
+    su $nombre
 }
 
 crearUsuario(){
