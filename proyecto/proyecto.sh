@@ -19,7 +19,7 @@ crearUsuario(){
     echo ""
     read -p "Ingrese el nombre del usuario: " nombre
     sudo -S adduser $nombre
-    getent passwd | grep $nombre
+    cat/etc/passwd | grep $nombre
 }
 
 
@@ -27,10 +27,9 @@ crearUsuario(){
 crearArchivo(){
     echo ""
     read -p "Ingrese el id del usuario: " id
-    usuario=$(id -nu $id)
-    if id -u "$usuario" >/dev/null 2>&1; then
-        #sudo -s cat /var/log/syslog | grep $id >> /home/$usuario/Escritorio/acciones.txt
-        sudo -s cat /var/log/syslog | grep $id >> /home/kenshy/Escritorio/acciones.txt
+
+    if id -nu "$id" > /dev/null; then
+        sudo -s cat /var/log/syslog | grep uid=$id > /home/$(whoami)/Escritorio/acciones.txt
         echo "Operación completada con éxito"
     fi
 }
@@ -39,7 +38,6 @@ crearArchivo(){
 accesosFallidos(){
     echo ""
     cat /var/log/auth.log | grep 'authentication failure'
-    #cat /var/log/auth.log | grep 'user NOT'
 }
 
 #Paso número 5
@@ -59,16 +57,15 @@ accesoTecnicos(){
 #Paso número 6
 deshabilitarServicio(){
     echo ""
-    read -p "Ingrese el nombre del usuario: " GG
-    if grep '^Tecnicos:' /etc/group | grep -q $GG; then
+    read -p "Ingrese el nombre del usuario: " tecnico
+    if grep -q $tecnico /etc/group; then
         sudo systemctl list-unit-files --type service --all
         read -p "Ingrese el nombre del servicio que deseas detener: " servicio
-        sudo -S systemctl stop $servicio
+        sudo -u $tecnico systemctl stop $servicio
         sudo -S systemctl status $servicio | grep Active
     else
-        echo "El usuario no tiene los permisos necesarios"
+        echo "El usuario no es tecnico"
     fi
-    #Falta codigo para permitir ingresar a la sesion del tecnico
 }
 
 #Paso número 7
