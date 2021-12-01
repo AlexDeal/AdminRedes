@@ -1,75 +1,65 @@
 #!/bin/bash
 
 #Funciones
-
-#Paso número 1
 crearContraseña(){
     echo ""
     if grep -q "sha512 minlen=12" /etc/pam.d/common-password; then
         echo "Existe longitud minima y es de 12"
     else
-        echo "No existe longitud minima"
         sudo -S sed -i 's/sha512/sha512 minlen=12/g' /etc/pam.d/common-password
         echo "Longitud modificada exitosamente"
     fi
 }
 
-#Paso número 2
 crearUsuario(){
     echo ""
     read -p "Ingrese el nombre del usuario: " nombre
     sudo -S adduser $nombre
-    cat/etc/passwd | grep $nombre
+    cat /etc/passwd | grep $nombre
 }
 
-
-#Paso número 3
 crearArchivo(){
     echo ""
     read -p "Ingrese el id del usuario: " id
 
     if id -nu "$id" > /dev/null; then
-        sudo -s cat /var/log/syslog | grep uid=$id > /home/$(whoami)/Escritorio/acciones.txt
+        sudo -s cat /var/log/syslog | grep uid=$id | tee /home/$(whoami)/Escritorio/acciones.txt
         echo "Operación completada con éxito"
     fi
 }
 
-#Paso número 4
 accesosFallidos(){
     echo ""
     cat /var/log/auth.log | grep 'authentication failure'
 }
 
-#Paso número 5
 accesoTecnicos(){
     echo ""
     read -p "Ingrese el nombre de usuario del técnico 1: " nombre
     sudo -S adduser $nombre
     usermod -aG adm $nombre
     usermod -aG Tecnicos $nombre
+    usermod -aG sudo $nombre
     echo ""
     read -p "Ingrese el nombre de usuario del técnico 2: " nombre
     sudo -S adduser $nombre
     usermod -aG adm $nombre
     usermod -aG Tecnicos $nombre
+    usermod -aG sudo $nombre
 }
 
-#Paso número 6
 deshabilitarServicio(){
     echo ""
     read -p "Ingrese el nombre del usuario: " tecnico
     if grep -q $tecnico /etc/group; then
-        sudo systemctl list-unit-files --type service --all
+        systemctl list-unit-files --type service --all
         read -p "Ingrese el nombre del servicio que deseas detener: " servicio
-        sudo -u $tecnico systemctl stop $servicio
-        sudo -S systemctl status $servicio | grep Active
+        su - $tecnico -c "sudo -S systemctl stop $servicio"
+        systemctl status $servicio | grep Active
     else
         echo "El usuario no es tecnico"
     fi
 }
-
-#Paso número 7
-
 
                                                                     
 while [[ ! $opcion =~ 8 ]]; do
@@ -105,6 +95,5 @@ while [[ ! $opcion =~ 8 ]]; do
             exit 0;;
         *) echo "Opción no válida"
     esac
-    echo ""
     read -p "Presione enter para continuar" enter
 done
